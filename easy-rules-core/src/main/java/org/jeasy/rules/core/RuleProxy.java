@@ -205,19 +205,33 @@ public class RuleProxy implements InvocationHandler {
         result = 31 * result + priority;
         return result;
     }
-
+    private Method findMethodByName(String methodName) {
+        for (Method method : getMethods()) {
+            if (methodName.equals(method.getName())) {                // new added metheod for duplicate logic
+                return method;
+            }
+        }
+        return null;
+    }
     private Method getToStringMethod() {
+        if (this.toStringMethod == null) {
+            this.toStringMethod = findMethodByName("toString");            //  modified metheod for duplicate logic
+        }
+        return this.toStringMethod;
+    }
+
+   /* private Method getToStringMethod() {
         if (this.toStringMethod == null) {
             Method[] methods = getMethods();
             for (Method method : methods) {
-                if ("toString".equals(method.getName())) {
+                if ("toString".equals(method.getName())) {           // before refactoring method
                     this.toStringMethod = method;
                     return this.toStringMethod;
                 }
             }
         }
         return this.toStringMethod;
-    }
+    } */
 
     private String toStringMethod() throws Exception {
         Method toStringMethod = getToStringMethod();
@@ -241,8 +255,39 @@ public class RuleProxy implements InvocationHandler {
             return name.compareTo(otherName);
         }
     }
-
+    private int getPriorityFromAnnotation() {
+        org.jeasy.rules.annotation.Rule rule = getRuleAnnotation();
+        return rule.priority();
+    }
+    private Integer getPriorityFromMethod() throws Exception {
+        for (Method method : getMethods()) {
+            if (method.isAnnotationPresent(Priority.class)) {
+                return (Integer) method.invoke(target);
+            }
+        }
+        return null;
+    }
     private int getRulePriority() throws Exception {
+        if (priority == null) {
+
+            priority = Rule.DEFAULT_PRIORITY;
+
+            int annotationPriority = getPriorityFromAnnotation();
+
+            if (annotationPriority != Rule.DEFAULT_PRIORITY) {
+                priority = annotationPriority;
+            }
+
+            Integer methodPriority = getPriorityFromMethod();
+
+            if (methodPriority != null) {
+                priority = methodPriority;
+            }
+        }
+
+        return priority;
+    }
+    /*private int getRulePriority() throws Exception {
         if (this.priority == null) {
             int priority = Rule.DEFAULT_PRIORITY;
 
@@ -261,7 +306,7 @@ public class RuleProxy implements InvocationHandler {
             this.priority = priority;
         }
         return this.priority;
-    }
+    }*/
 
     private Method getConditionMethod() {
         if (this.conditionMethod == null) {
@@ -290,19 +335,24 @@ public class RuleProxy implements InvocationHandler {
         }
         return this.actionMethods;
     }
-
     private Method getCompareToMethod() {
+        if (this.compareToMethod == null) {
+            this.compareToMethod = findMethodByName("compareTo");          //  modified metheod for duplicate logic
+        }
+        return this.compareToMethod;
+    }
+    /* private Method getCompareToMethod() {
         if (this.compareToMethod == null) {
             Method[] methods = getMethods();
             for (Method method : methods) {
-                if (method.getName().equals("compareTo")) {
+                if (method.getName().equals("compareTo")) {      // before refactoring method
                     this.compareToMethod = method;
                     return this.compareToMethod;
                 }
             }
         }
         return this.compareToMethod;
-    }
+    }*/
 
     private Method[] getMethods() {
         if (this.methods == null) {
@@ -325,8 +375,33 @@ public class RuleProxy implements InvocationHandler {
         }
         return this.name;
     }
+    private String buildDefaultDescription() {
 
+        StringBuilder descriptionBuilder = new StringBuilder();
+
+        appendConditionMethodName(descriptionBuilder);
+
+        appendActionMethodsNames(descriptionBuilder);
+
+        return descriptionBuilder.toString();
+    }
     private String getRuleDescription() {
+
+        if (description == null) {
+
+            org.jeasy.rules.annotation.Rule rule = getRuleAnnotation();
+
+            String defaultDescription = buildDefaultDescription();
+
+            description =
+                    rule.description().equals(Rule.DEFAULT_DESCRIPTION)
+                            ? defaultDescription
+                            : rule.description();
+        }
+
+        return description;
+    }
+    /*private String getRuleDescription() {
         if (this.description == null) {
             // Default description = "when " + conditionMethodName + " then " + comma separated actionMethodsNames
             StringBuilder description = new StringBuilder();
@@ -336,7 +411,7 @@ public class RuleProxy implements InvocationHandler {
             this.description = rule.description().equals(Rule.DEFAULT_DESCRIPTION) ? description.toString() : rule.description();
         }
         return this.description;
-    }
+    }*/
 
     private void appendConditionMethodName(StringBuilder description) {
         Method method = getConditionMethod();
