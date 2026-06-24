@@ -116,33 +116,56 @@ class RuleDefinitionValidator {
                 && method.getReturnType().equals(Boolean.TYPE)
                 && validParameters(method);
     }
-
-    private boolean validParameters(final Method method) {
-        int notAnnotatedParameterCount = 0;
-        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+    private boolean hasOnlyFactAnnotations(Annotation[][] parameterAnnotations) {
         for (Annotation[] annotations : parameterAnnotations) {
-            if (annotations.length == 0) {
-                notAnnotatedParameterCount += 1;
-            } else {
-                //Annotation types has to be Fact
-                for (Annotation annotation : annotations) {
-                    if (!annotation.annotationType().equals(Fact.class)) {
-                        return false;
-                    }
+            for (Annotation annotation : annotations) {
+                if (!annotation.annotationType().equals(Fact.class)) {
+                    return false;
                 }
-            }
-        }
-        if (notAnnotatedParameterCount > 1) {
-            return false;
-        }
-        if (notAnnotatedParameterCount == 1) {
-            Parameter notAnnotatedParameter = getNotAnnotatedParameter(method);
-            if (notAnnotatedParameter != null) {
-                return Facts.class.isAssignableFrom(notAnnotatedParameter.getType());
             }
         }
         return true;
     }
+    private int countNonAnnotatedParameters(Annotation[][] parameterAnnotations) {
+        int count = 0;
+
+        for (Annotation[] annotations : parameterAnnotations) {
+            if (annotations.length == 0) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+    private boolean isValidNonAnnotatedParameter(Method method) {
+        Parameter parameter = getNotAnnotatedParameter(method);
+
+        return parameter == null
+                || Facts.class.isAssignableFrom(parameter.getType());
+    }
+    private boolean validParameters(final Method method) {
+
+        Annotation[][] parameterAnnotations =
+                method.getParameterAnnotations();
+
+        if (!hasOnlyFactAnnotations(parameterAnnotations)) {
+            return false;
+        }
+
+        int nonAnnotatedCount =
+                countNonAnnotatedParameters(parameterAnnotations);
+
+        if (nonAnnotatedCount > 1) {
+            return false;
+        }
+
+        if (nonAnnotatedCount == 1) {
+            return isValidNonAnnotatedParameter(method);
+        }
+
+        return true;
+    }
+
 
     private Parameter getNotAnnotatedParameter(Method method) {
         Parameter[] parameters = method.getParameters();
