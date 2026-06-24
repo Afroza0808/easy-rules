@@ -73,7 +73,12 @@ public final class DefaultRulesEngine extends AbstractRulesEngine {
         doFire(rules, facts);
         triggerListenersAfterRules(rules, facts);
     }
+    private boolean isPriorityThresholdExceeded(
+            Rule rule) {
 
+        return rule.getPriority() >                       //new extract method
+                parameters.getPriorityThreshold();
+    }
     void doFire(Rules rules, Facts facts) {
         if (rules.isEmpty()) {
             LOGGER.warn("No rules registered! Nothing to apply");
@@ -86,16 +91,26 @@ public final class DefaultRulesEngine extends AbstractRulesEngine {
         for (Rule rule : rules) {
             final String name = rule.getName();
             final int priority = rule.getPriority();
-            if (priority > parameters.getPriorityThreshold()) {
+           /* if (priority > parameters.getPriorityThreshold()) {
                 LOGGER.debug("Rule priority threshold ({}) exceeded at rule '{}' with priority={}, next rules will be skipped",
                         parameters.getPriorityThreshold(), name, priority);
+                break;
+            }*/
+            if (isPriorityThresholdExceeded(rule)) {
+
+                LOGGER.debug(
+                        "Rule priority threshold ({}) exceeded at rule '{}' with priority={}, next rules will be skipped",
+                        parameters.getPriorityThreshold(),
+                        name,                   // replacing
+                        priority);
+
                 break;
             }
             if (!shouldBeEvaluated(rule, facts)) {
                 LOGGER.debug("Rule '{}' has been skipped before being evaluated", name);
                 continue;
             }
-            boolean evaluationResult = false;
+           /* boolean evaluationResult = false;
             try {
                 evaluationResult = rule.evaluate(facts);
             } catch (RuntimeException exception) {
@@ -106,7 +121,10 @@ public final class DefaultRulesEngine extends AbstractRulesEngine {
                     LOGGER.debug("Next rules will be skipped since parameter skipOnFirstNonTriggeredRule is set");
                     break;
                 }
-            }
+            }*/
+            boolean evaluationResult =
+                    evaluateRule(rule, facts, name);    //new extract method
+
             if (evaluationResult) {
                 LOGGER.debug("Rule '{}' triggered", name);
                 triggerListenersAfterEvaluate(rule, facts, true);
@@ -137,7 +155,31 @@ public final class DefaultRulesEngine extends AbstractRulesEngine {
             }
         }
     }
+    private boolean evaluateRule(Rule rule, Facts facts, String name) {
 
+        try {
+            return rule.evaluate(facts);
+
+        } catch (RuntimeException exception) {
+
+            LOGGER.error("Rule '" + name + "' evaluated with error", exception);
+
+            triggerListenersOnEvaluationError(rule, facts, exception);
+
+            return false;
+        }
+    }
+    private boolean shouldStopAfterAppliedRule() {
+        return parameters.isSkipOnFirstAppliedRule();
+    }
+
+    private boolean shouldStopAfterFailedRule() {
+        return parameters.isSkipOnFirstFailedRule();
+    }
+
+    private boolean shouldStopAfterNonTriggeredRule() {
+        return parameters.isSkipOnFirstNonTriggeredRule();
+    }
     private void logEngineParameters() {
         LOGGER.debug("{}", parameters);
     }
