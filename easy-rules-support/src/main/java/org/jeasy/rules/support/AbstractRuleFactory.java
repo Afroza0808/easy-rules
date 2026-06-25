@@ -60,20 +60,21 @@ public abstract class AbstractRuleFactory {
     protected abstract Rule createSimpleRule(RuleDefinition ruleDefinition);
 
     protected Rule createCompositeRule(RuleDefinition ruleDefinition) {
-        if (ruleDefinition.getCondition() != null) {
+       /* if (ruleDefinition.getCondition() != null) {
             LOGGER.warn(
                     "Condition '{}' in composite rule '{}' of type {} will be ignored.",
                     ruleDefinition.getCondition(),
                     ruleDefinition.getName(),
-                    ruleDefinition.getCompositeRuleType());
-        }
-        if (ruleDefinition.getActions() != null && !ruleDefinition.getActions().isEmpty()) {
+                    ruleDefinition.getCompositeRuleType());        //for removing long method
+
+       if (ruleDefinition.getActions() != null && !ruleDefinition.getActions().isEmpty()) {
             LOGGER.warn(
                     "Actions '{}' in composite rule '{}' of type {} will be ignored.",
                     ruleDefinition.getActions(),
                     ruleDefinition.getName(),
                     ruleDefinition.getCompositeRuleType());
-        }
+        }*/
+        validateCompositeRule(ruleDefinition);
         CompositeRule compositeRule;
         String name = ruleDefinition.getName();
         switch (ruleDefinition.getCompositeRuleType()) {
@@ -97,6 +98,26 @@ public abstract class AbstractRuleFactory {
         }
 
         return compositeRule;
+    }
+    private void validateCompositeRule(RuleDefinition ruleDefinition) {
+
+        if (ruleDefinition.getCondition() != null) {
+            LOGGER.warn(
+                    "Condition '{}' in composite rule '{}' of type {} will be ignored.",
+                    ruleDefinition.getCondition(),
+                    ruleDefinition.getName(),
+                    ruleDefinition.getCompositeRuleType());              // add new methods
+        }
+
+        if (ruleDefinition.getActions() != null &&
+                !ruleDefinition.getActions().isEmpty()) {
+            LOGGER.warn(
+                    "Actions '{}' in composite rule '{}' of type {} will be ignored.",
+                    ruleDefinition.getActions(),
+                    ruleDefinition.getName(),
+                    ruleDefinition.getCompositeRuleType());
+        }
+
     }
 
 }
