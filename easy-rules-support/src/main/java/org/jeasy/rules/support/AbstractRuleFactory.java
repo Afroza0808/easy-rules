@@ -90,15 +90,41 @@ public abstract class AbstractRuleFactory {
             default:
                 throw new IllegalArgumentException("Invalid composite rule type, must be one of " + ALLOWED_COMPOSITE_RULE_TYPES);
         }
+        initializeCompositeRule(compositeRule, ruleDefinition);      //replaced
+        /*compositeRule.setDescription(ruleDefinition.getDescription());
+        compositeRule.setPriority(ruleDefinition.getPriority());*/
+
+       /* for (RuleDefinition composingRuleDefinition : ruleDefinition.getComposingRules()) {
+            compositeRule.addRule(createRule(composingRuleDefinition));
+        }*/
+
+        addComposingRules(compositeRule, ruleDefinition);        //replace for extract method
+        return compositeRule;
+    }
+
+    private void addComposingRules(
+            CompositeRule compositeRule,
+            RuleDefinition ruleDefinition) {
+
+        for (RuleDefinition composingRuleDefinition               //extract method
+                : ruleDefinition.getComposingRules()) {
+
+            compositeRule.addRule(createRule(composingRuleDefinition));
+
+        }
+
+    }
+
+    private void initializeCompositeRule(
+            CompositeRule compositeRule,
+            RuleDefinition ruleDefinition) {               //add method
+
         compositeRule.setDescription(ruleDefinition.getDescription());
         compositeRule.setPriority(ruleDefinition.getPriority());
 
-        for (RuleDefinition composingRuleDefinition : ruleDefinition.getComposingRules()) {
-            compositeRule.addRule(createRule(composingRuleDefinition));
-        }
-
-        return compositeRule;
     }
+
+
     private void validateCompositeRule(RuleDefinition ruleDefinition) {
 
         if (ruleDefinition.getCondition() != null) {
