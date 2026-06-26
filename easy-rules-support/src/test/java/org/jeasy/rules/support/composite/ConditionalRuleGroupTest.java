@@ -68,7 +68,21 @@ public class ConditionalRuleGroupTest {
         rules.clear();
         actions.clear();
     }
+    private void assertExecutionStatus(
+            boolean conditionalExecuted,
+            boolean rule1Executed,
+            boolean rule2Executed) {
 
+        assertThat(conditionalRule.isExecuted())         //add method for duplicate code
+                .isEqualTo(conditionalExecuted);
+
+        assertThat(rule1.isExecuted())
+                .isEqualTo(rule1Executed);
+
+        assertThat(rule2.isExecuted())
+                .isEqualTo(rule2Executed);
+
+    }
     @Test
     public void rulesMustNotBeExecutedIfConditionalRuleEvaluatesToFalse() {
         // Given
@@ -84,11 +98,12 @@ public class ConditionalRuleGroupTest {
          */
 
         // primaryRule should not be executed
-        assertThat(conditionalRule.isExecuted()).isFalse();
+       /* assertThat(conditionalRule.isExecuted()).isFalse();
         //Rule 1 should not be executed
         assertThat(rule1.isExecuted()).isFalse();
         //Rule 2 should not be executed
-        assertThat(rule2.isExecuted()).isFalse();
+        assertThat(rule2.isExecuted()).isFalse(); */
+        assertExecutionStatus(false, false, false);    //replace
     }
 
     @Test
@@ -106,11 +121,12 @@ public class ConditionalRuleGroupTest {
          */
 
         // primaryRule should be executed
-        assertThat(conditionalRule.isExecuted()).isTrue();
+       /* assertThat(conditionalRule.isExecuted()).isTrue();
         //Rule 1 should not be executed
         assertThat(rule1.isExecuted()).isFalse();
         //Rule 2 should be executed
-        assertThat(rule2.isExecuted()).isTrue();
+        assertThat(rule2.isExecuted()).isTrue();*/
+        assertExecutionStatus(true, false, true);    //replace
     }
 
     @Test
@@ -123,11 +139,12 @@ public class ConditionalRuleGroupTest {
 
         // Then
         // primaryRule should be executed
-        assertThat(conditionalRule.isExecuted()).isTrue();
+       /* assertThat(conditionalRule.isExecuted()).isTrue();
         //Rule 1 should be executed
         assertThat(rule1.isExecuted()).isTrue();
         // Rule 2 should not be executed
-        assertThat(rule2.isExecuted()).isFalse();
+        assertThat(rule2.isExecuted()).isFalse();*/
+        assertExecutionStatus(true, true, false);   //replace
     }
 
     @Test
@@ -157,9 +174,10 @@ public class ConditionalRuleGroupTest {
         rulesEngine.fire(rules, facts);
 
         // Then
-        assertThat(conditionalRule.isExecuted()).isTrue();
+       assertThat(conditionalRule.isExecuted()).isTrue();
         assertThat(rule.isExecuted()).isTrue();
         assertThat(annotatedRule.isExecuted()).isFalse();
+       /* assertExecutionStatus(true, true, false);   //replace*/
     }
 
     @Test(expected = IllegalArgumentException.class)
