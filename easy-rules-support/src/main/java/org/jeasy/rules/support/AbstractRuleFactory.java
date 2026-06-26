@@ -90,15 +90,28 @@ public abstract class AbstractRuleFactory {
             default:
                 throw new IllegalArgumentException("Invalid composite rule type, must be one of " + ALLOWED_COMPOSITE_RULE_TYPES);
         }
-        compositeRule.setDescription(ruleDefinition.getDescription());
-        compositeRule.setPriority(ruleDefinition.getPriority());
+        initializeCompositeRule(compositeRule, ruleDefinition);      //replaced
+        /*compositeRule.setDescription(ruleDefinition.getDescription());
+        compositeRule.setPriority(ruleDefinition.getPriority());*/
 
         for (RuleDefinition composingRuleDefinition : ruleDefinition.getComposingRules()) {
             compositeRule.addRule(createRule(composingRuleDefinition));
         }
 
+
         return compositeRule;
     }
+
+    private void initializeCompositeRule(
+            CompositeRule compositeRule,
+            RuleDefinition ruleDefinition) {               //add method
+
+        compositeRule.setDescription(ruleDefinition.getDescription());
+        compositeRule.setPriority(ruleDefinition.getPriority());
+
+    }
+
+
     private void validateCompositeRule(RuleDefinition ruleDefinition) {
 
         if (ruleDefinition.getCondition() != null) {
