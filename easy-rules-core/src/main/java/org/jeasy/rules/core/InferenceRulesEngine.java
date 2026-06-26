@@ -74,8 +74,8 @@ public final class InferenceRulesEngine extends AbstractRulesEngine {
     @Override
     public void fire(Rules rules, Facts facts) {
         validateInputs(rules, facts);   // replace
-
-        Set<Rule> selectedRules;
+        executeInference(rules, facts);
+        /*Set<Rule> selectedRules;
         do {
             LOGGER.debug("Selecting candidate rules based on the following facts: {}", facts);
             selectedRules = selectCandidates(rules, facts);
@@ -84,7 +84,33 @@ public final class InferenceRulesEngine extends AbstractRulesEngine {
             } else {
                 LOGGER.debug("No candidate rules found for facts: {}", facts);
             }
+        } while (!selectedRules.isEmpty());*/
+
+    }
+    private void executeInference(Rules rules, Facts facts) {
+
+        Set<Rule> selectedRules;                  //add for extract method
+
+        do {
+
+            LOGGER.debug("Selecting candidate rules based on the following facts: {}", facts);
+
+            selectedRules = selectCandidates(rules, facts);
+
+            fireSelectedRules(selectedRules, facts);
+
         } while (!selectedRules.isEmpty());
+
+    }
+    private void fireSelectedRules(Set<Rule> selectedRules, Facts facts) {
+
+        if (selectedRules.isEmpty()) {                          // add method
+            LOGGER.debug("No candidate rules found for facts: {}", facts);
+            return;
+        }
+
+        delegate.fire(new Rules(selectedRules), facts);
+
     }
     private void validateInputs(Rules rules, Facts facts) {
         Objects.requireNonNull(rules, "Rules must not be null");       //add method for repeated null check and duplicate code
