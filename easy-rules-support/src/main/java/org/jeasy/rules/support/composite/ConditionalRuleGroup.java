@@ -140,15 +140,39 @@ public class ConditionalRuleGroup extends CompositeRule {
             rule.execute(facts);
         }
     }
+    private void executeSuccessfulRules(Facts facts) throws Exception {
 
+        /*for (Rule rule : sort(successfulEvaluations)) {   //add method
+
+            rule.execute(facts);
+
+        }*/
+        executeSuccessfulRules(facts);    //replace
+    }
+    private void validateHighestPriority(List<Rule> sortedRules) {
+
+        if (sortedRules.size() > 1 &&
+                sortedRules.get(0).getPriority()
+                        == sortedRules.get(1).getPriority()) {     // add for extract method
+
+            throw new IllegalArgumentException(
+                    "Only one rule can have highest priority");
+
+        }
+
+    }
     private Rule getRuleWithHighestPriority() {
         List<Rule> copy = sort(rules);
         // make sure we only have one rule with the highest priority
-        Rule highest = copy.get(0);
+        /*Rule highest = copy.get(0);
         if (copy.size() > 1 && copy.get(1).getPriority() == highest.getPriority()) {
            throw new IllegalArgumentException("Only one rule can have highest priority");
-        }
-        return highest;
+        }*/
+        validateHighestPriority(copy);     //replace
+
+        return copy.get(0);
+
+
     }
 
     private List<Rule> sort(Set<Rule> rules) {
