@@ -98,16 +98,32 @@ public class ActivationRuleGroup extends CompositeRule {
         super(name, description, priority);
         rules = new TreeSet<>(rules);
     }*/
+   private boolean selectRule(Facts facts) {
 
+       for (Rule rule : rules) {
+
+           if (rule.evaluate(facts)) {
+
+               selectedRule = rule;      //add for long conditional logic
+               return true;
+
+           }
+
+       }
+
+       return false;
+
+   }
     @Override
     public boolean evaluate(Facts facts) {
-        for (Rule rule : rules) {
+        /*for (Rule rule : rules) {
             if (rule.evaluate(facts)) {
                 selectedRule = rule;
                 return true;
             }
         }
-        return false;
+        return false;*/
+        return selectRule(facts);       //replace
     }
 
     @Override
