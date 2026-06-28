@@ -66,11 +66,8 @@ public class SpELRuleFactoryTest {
     @Test
     public void testRulesCreation() throws Exception {
         // given
-        File rulesDescriptor = new File("src/test/resources/rules." + fileExtension);
 
-        // when
-        Rules rules = factory.createRules(new FileReader(rulesDescriptor));
-
+        Rules rules = createRules("rules");   //replace
         // then
         assertThat(rules).hasSize(2);
         Iterator<Rule> iterator = rules.iterator();
@@ -120,11 +117,8 @@ public class SpELRuleFactoryTest {
     @Test
     public void testRuleCreationFromFileReader_withCompositeRules() throws Exception {
         // given
-        File rulesDescriptor = new File("src/test/resources/composite-rules." + fileExtension);
 
-        // when
-        Rules rules = factory.createRules(new FileReader(rulesDescriptor));
-
+        Rules rules = createRules("rules");      //replace
         // then
         assertThat(rules).hasSize(2);
         Iterator<Rule> iterator = rules.iterator();
@@ -177,5 +171,16 @@ public class SpELRuleFactoryTest {
                 // then
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Non-composite rules cannot have composing rules");
+    }
+    private Rules createRules(String fileName) throws Exception {
+
+        File file = new File(                                     //add for duplicate file reading
+                "src/test/resources/" +
+                        fileName + "." + fileExtension);
+
+        try (FileReader reader = new FileReader(file)) {
+            return factory.createRules(reader);
+        }
+
     }
 }
