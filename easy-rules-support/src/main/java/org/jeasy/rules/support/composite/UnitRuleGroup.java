@@ -29,7 +29,7 @@ import org.jeasy.rules.api.Rule;
 /**
  * A unit rule group is a composite rule that acts as a unit: Either all rules are
  * applied or nothing is applied (all or nothing semantic).
- * 
+ *
  * <strong>This class is not thread-safe.</strong>
  *
  *  @author Mahmoud Ben Hassine (mahmoud.benhassine@icloud.com)
@@ -71,7 +71,7 @@ public class UnitRuleGroup extends CompositeRule {
 
     @Override
     public boolean evaluate(Facts facts) {
-        if (!rules.isEmpty()) {
+        /*if (!rules.isEmpty()) {
             for (Rule rule : rules) {
                 if (!rule.evaluate(facts)) {
                     return false;
@@ -79,7 +79,25 @@ public class UnitRuleGroup extends CompositeRule {
             }
             return true;
         }
-        return false;
+        return false;*/
+        if (rules.isEmpty()) {
+            return false;                  //replace
+        }
+
+        return areAllRulesSatisfied(facts);
+    }
+    private boolean areAllRulesSatisfied(Facts facts) {
+
+        for (Rule rule : rules) {
+
+            if (!rule.evaluate(facts)) {    //add for extract method and readability
+                return false;
+            }
+
+        }
+
+        return true;
+
     }
 
     @Override
