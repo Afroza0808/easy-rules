@@ -44,7 +44,13 @@ public class ActivationRuleGroup extends CompositeRule {
     /**
      * Create an activation rule group.
      */
+    private void initializeRules() {
+        rules = new TreeSet<>(rules);     //add for duplicate code
+    }
     public ActivationRuleGroup() {
+        initializeRules();     //replace
+    }
+    /*public ActivationRuleGroup() {
         rules = new TreeSet<>(rules);
     }
 
@@ -54,6 +60,10 @@ public class ActivationRuleGroup extends CompositeRule {
      * @param name of the activation rule group
      */
     public ActivationRuleGroup(String name) {
+        super(name);                //replace
+        initializeRules();
+    }
+   /* public ActivationRuleGroup(String name) {
         super(name);
         rules = new TreeSet<>(rules);
     }
@@ -64,7 +74,11 @@ public class ActivationRuleGroup extends CompositeRule {
      * @param name        of the activation rule group
      * @param description of the activation rule group
      */
-    public ActivationRuleGroup(String name, String description) {
+   public ActivationRuleGroup(String name, String description) {
+       super(name, description);                 //replace
+       initializeRules();
+   }
+    /*public ActivationRuleGroup(String name, String description) {
         super(name, description);
         rules = new TreeSet<>(rules);
     }
@@ -78,8 +92,12 @@ public class ActivationRuleGroup extends CompositeRule {
      */
     public ActivationRuleGroup(String name, String description, int priority) {
         super(name, description, priority);
-        rules = new TreeSet<>(rules);
+        initializeRules();
     }
+   /* public ActivationRuleGroup(String name, String description, int priority) {
+        super(name, description, priority);
+        rules = new TreeSet<>(rules);
+    }*/
 
     @Override
     public boolean evaluate(Facts facts) {
