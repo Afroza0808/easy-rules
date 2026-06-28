@@ -62,47 +62,101 @@ public abstract class AbstractRuleDefinitionReader implements RuleDefinitionRead
      * @param map of rule properties
      * @return a rule definition
      */
-    protected RuleDefinition createRuleDefinition(Map<String, Object> map) {
-        RuleDefinition ruleDefinition = new RuleDefinition();
+    private void populateBasicProperties(RuleDefinition ruleDefinition,
+                                         Map<String, Object> map) {
 
         String name = (String) map.get("name");
-        ruleDefinition.setName(name != null ? name : Rule.DEFAULT_NAME);
+        ruleDefinition.setName(name != null ? name : Rule.DEFAULT_NAME);   //added
 
         String description = (String) map.get("description");
         ruleDefinition.setDescription(description != null ? description : Rule.DEFAULT_DESCRIPTION);
 
         Integer priority = (Integer) map.get("priority");
         ruleDefinition.setPriority(priority != null ? priority : Rule.DEFAULT_PRIORITY);
+    }
+    private String validateCondition(Map<String, Object> map,
+                                     String compositeRuleType) {
 
-        String compositeRuleType = (String) map.get("compositeRuleType");
+        String condition = (String) map.get("condition");          //added
 
-        String condition = (String) map.get("condition");
         if (condition == null && compositeRuleType == null) {
             throw new IllegalArgumentException("The rule condition must be specified");
         }
-        ruleDefinition.setCondition(condition);
+        return condition;
+    }
+    private List<String> validateActions(Map<String, Object> map,
+                                         String compositeRuleType) {
 
         List<String> actions = (List<String>) map.get("actions");
-        if ((actions == null || actions.isEmpty()) && compositeRuleType == null) {
-            throw new IllegalArgumentException("The rule action(s) must be specified");
+
+        if ((actions == null || actions.isEmpty())
+                && compositeRuleType == null) {
+
+            throw new IllegalArgumentException(
+                    "The rule action(s) must be specified");        //added
+
         }
-        ruleDefinition.setActions(actions);
+        return actions;
+    }
+    private void processComposingRules(RuleDefinition ruleDefinition,
+                                       Map<String, Object> map,
+                                       String compositeRuleType) {
+
+        List<Object> composingRules =
+                (List<Object>) map.get("composingRules");
+
+        validateComposingRules(composingRules, compositeRuleType);
+
+        if (composingRules == null) {
+            return;
+        }
+                                                                  //added
+        List<RuleDefinition> composingRuleDefinitions =
+                new ArrayList<>();
+
+        for (Object rule : composingRules) {
+
+            Map<String, Object> composingRuleMap =
+                    (Map<String, Object>) rule;
+
+            composingRuleDefinitions.add(
+                    createRuleDefinition(composingRuleMap));
+
+        }
+        ruleDefinition.setComposingRules(composingRuleDefinitions);
+        ruleDefinition.setCompositeRuleType(compositeRuleType);
+
+    }
+    private void validateComposingRules(List<Object> composingRules,
+                                        String compositeRuleType) {
+        if ((composingRules != null && !composingRules.isEmpty())
+                && compositeRuleType == null) {
+
+            throw new IllegalArgumentException(
+                    "Non-composite rules cannot have composing rules");       //added
+
+        }
+        if ((composingRules == null || composingRules.isEmpty())
+                && compositeRuleType != null) {
+
+            throw new IllegalArgumentException(
+                    "Composite rules must have composing rules specified");
+        }
+    }
+    protected RuleDefinition createRuleDefinition(Map<String, Object> map) {
+        RuleDefinition ruleDefinition = new RuleDefinition();
+        String compositeRuleType = (String) map.get("compositeRuleType");    //replace
+
+        String condition = validateCondition(map, compositeRuleType);   //replace
+        ruleDefinition.setCondition(condition);
+
+        List<String> actions = validateActions(map, compositeRuleType);
+        ruleDefinition.setActions(actions);    //replace
 
         List<Object> composingRules = (List<Object>) map.get("composingRules");
-        if ((composingRules != null && !composingRules.isEmpty()) && compositeRuleType == null) {
-            throw new IllegalArgumentException("Non-composite rules cannot have composing rules");
-        } else if ((composingRules == null || composingRules.isEmpty()) && compositeRuleType != null) {
-            throw new IllegalArgumentException("Composite rules must have composing rules specified");
-        } else if (composingRules != null) {
-            List<RuleDefinition> composingRuleDefinitions = new ArrayList<>();
-            for (Object rule : composingRules) {
-                Map<String, Object> composingRuleMap = (Map<String, Object>) rule;
-                composingRuleDefinitions.add(createRuleDefinition(composingRuleMap));
-            }
-            ruleDefinition.setComposingRules(composingRuleDefinitions);
-            ruleDefinition.setCompositeRuleType(compositeRuleType);
-        }
 
+        processComposingRules(ruleDefinition, map, compositeRuleType);   //replace
         return ruleDefinition;
+
     }
 }
