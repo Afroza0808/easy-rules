@@ -92,19 +92,38 @@ public class ConditionalRuleGroup extends CompositeRule {
      */
     @Override
     public boolean evaluate(Facts facts) {
-        successfulEvaluations = new HashSet<>();
-        conditionalRule = getRuleWithHighestPriority();
+        /*successfulEvaluations = new HashSet<>();
+        conditionalRule = getRuleWithHighestPriority();*/
+        initializeEvaluation();    //replace
         if (conditionalRule.evaluate(facts)) {
-            for (Rule rule : rules) {
+            /*for (Rule rule : rules) {
                 if (rule != conditionalRule && rule.evaluate(facts)) {
                     successfulEvaluations.add(rule);
                 }
-            }
+            }*/
+            collectSuccessfulRules(facts);   //replace
             return true;
         }
         return false;
     }
+    private void initializeEvaluation() {
+        successfulEvaluations = new HashSet<>();       //add for extract method
+        conditionalRule = getRuleWithHighestPriority();
+    }
+    private void collectSuccessfulRules(Facts facts) {
 
+        for (Rule rule : rules) {
+
+            if (rule != conditionalRule &&             //add for extract method
+                    rule.evaluate(facts)) {
+
+                successfulEvaluations.add(rule);
+
+            }
+
+        }
+
+    }
     /**
      * When a conditional rule group is executed, all rules that evaluated to true
      * are performed in their natural order, but with the conditional rule 
