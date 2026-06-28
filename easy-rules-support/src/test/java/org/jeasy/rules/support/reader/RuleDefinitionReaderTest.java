@@ -62,23 +62,14 @@ public class RuleDefinitionReaderTest {
 
     @Test
     public void testRuleDefinitionReadingFromFile() throws Exception {
-        // given
-       /* File adultRuleDescriptor = new File("src/test/resources/adult-rule." + fileExtension);
 
-        // when
-        List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new FileReader(adultRuleDescriptor));*/
-
-        // then
         List<RuleDefinition> ruleDefinitions =
-                readRules("adult-rule");
+                readRules("adult-rule");           //replace
         assertThat(ruleDefinitions).hasSize(1);
         RuleDefinition adultRuleDefinition = ruleDefinitions.get(0);
-        assertThat(adultRuleDefinition).isNotNull();
-        assertThat(adultRuleDefinition.getName()).isEqualTo("adult rule");
-        assertThat(adultRuleDefinition.getDescription()).isEqualTo("when age is greater than 18, then mark as adult");
-        assertThat(adultRuleDefinition.getPriority()).isEqualTo(1);
-        assertThat(adultRuleDefinition.getCondition()).isEqualTo("person.age > 18");
-        assertThat(adultRuleDefinition.getActions()).isEqualTo(Collections.singletonList("person.setAdult(true);"));
+
+        assertAdultRule(adultRuleDefinition);       //replace
+
     }
 
     @Test
@@ -91,44 +82,29 @@ public class RuleDefinitionReaderTest {
         List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new StringReader(adultRuleDescriptor));
 
         // then
-        assertThat(ruleDefinitions).hasSize(1);
+        assertThat(ruleDefinitions).hasSize(1);        //replace
         RuleDefinition adultRuleDefinition = ruleDefinitions.get(0);
-        assertThat(adultRuleDefinition).isNotNull();
-        assertThat(adultRuleDefinition.getName()).isEqualTo("adult rule");
-        assertThat(adultRuleDefinition.getDescription()).isEqualTo("when age is greater than 18, then mark as adult");
-        assertThat(adultRuleDefinition.getPriority()).isEqualTo(1);
-        assertThat(adultRuleDefinition.getCondition()).isEqualTo("person.age > 18");
-        assertThat(adultRuleDefinition.getActions()).isEqualTo(Collections.singletonList("person.setAdult(true);"));
+        assertAdultRule(adultRuleDefinition);                  //replace
+
     }
 
     @Test
     public void testRuleDefinitionReading_withDefaultValues() throws Exception {
         // given
-       /* File adultRuleDescriptor = new File("src/test/resources/adult-rule-with-default-values." + fileExtension);
 
-        // when
-        List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new FileReader(adultRuleDescriptor));*/
-        List<RuleDefinition> ruleDefinitions =
+        List<RuleDefinition> ruleDefinitions =             //replace
                 readRules("adult-rule");
         // then
         assertThat(ruleDefinitions).hasSize(1);
         RuleDefinition adultRuleDefinition = ruleDefinitions.get(0);
-        assertThat(adultRuleDefinition).isNotNull();
-        assertThat(adultRuleDefinition.getName()).isEqualTo(Rule.DEFAULT_NAME);
-        assertThat(adultRuleDefinition.getDescription()).isEqualTo(Rule.DEFAULT_DESCRIPTION);
-        assertThat(adultRuleDefinition.getPriority()).isEqualTo(Rule.DEFAULT_PRIORITY);
-        assertThat(adultRuleDefinition.getCondition()).isEqualTo("person.age > 18");
-        assertThat(adultRuleDefinition.getActions()).isEqualTo(Collections.singletonList("person.setAdult(true);"));
+        assertAdultRule(adultRuleDefinition);            //replace
+
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidRuleDefinitionReading_whenNoCondition() throws Exception {
-        // given
-       /* File adultRuleDescriptor = new File("src/test/resources/adult-rule-without-condition." + fileExtension);
 
-        // when
-        List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new FileReader(adultRuleDescriptor));*/
-        List<RuleDefinition> ruleDefinitions =
+        List<RuleDefinition> ruleDefinitions =          //replace
                 readRules("adult-rule");
         // then
         // expected exception
@@ -136,11 +112,7 @@ public class RuleDefinitionReaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidRuleDefinitionReading_whenNoActions() throws Exception {
-        // given
-       /* File adultRuleDescriptor = new File("src/test/resources/adult-rule-without-actions." + fileExtension);
 
-        // when
-        List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new FileReader(adultRuleDescriptor));*/
         List<RuleDefinition> ruleDefinitions =
                 readRules("adult-rule");
         // then
@@ -149,65 +121,32 @@ public class RuleDefinitionReaderTest {
 
     @Test
     public void testRulesDefinitionReading() throws Exception {
-        // given
-        /*File rulesDescriptor = new File("src/test/resources/rules." + fileExtension);
 
-        // when
-        List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new FileReader(rulesDescriptor));*/
         List<RuleDefinition> ruleDefinitions =
-                readRules("adult-rule");
+                readRules("adult-rule");                 //replace
         // then
         assertThat(ruleDefinitions).hasSize(2);
         RuleDefinition ruleDefinition = ruleDefinitions.get(0);
-        assertThat(ruleDefinition).isNotNull();
-        assertThat(ruleDefinition.getName()).isEqualTo("adult rule");
-        assertThat(ruleDefinition.getDescription()).isEqualTo("when age is greater than 18, then mark as adult");
-        assertThat(ruleDefinition.getPriority()).isEqualTo(1);
-        assertThat(ruleDefinition.getCondition()).isEqualTo("person.age > 18");
-        assertThat(ruleDefinition.getActions()).isEqualTo(Collections.singletonList("person.setAdult(true);"));
+        assertAdultRule(ruleDefinition);                      //replace
 
         ruleDefinition = ruleDefinitions.get(1);
-        assertThat(ruleDefinition).isNotNull();
-        assertThat(ruleDefinition.getName()).isEqualTo("weather rule");
-        assertThat(ruleDefinition.getDescription()).isEqualTo("when it rains, then take an umbrella");
-        assertThat(ruleDefinition.getPriority()).isEqualTo(2);
-        assertThat(ruleDefinition.getCondition()).isEqualTo("rain == true");
-        assertThat(ruleDefinition.getActions()).isEqualTo(Collections.singletonList("System.out.println(\"It rains, take an umbrella!\");"));
-    }
+        assertAdultRule(ruleDefinition);                 //replace
 
+    }
     @Test
     public void testEmptyRulesDefinitionReading() throws Exception {
-        // given
-       /* File rulesDescriptor = new File("src/test/resources/rules-empty." + fileExtension);
 
-        // when
-        List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new FileReader(rulesDescriptor));*/
         List<RuleDefinition> ruleDefinitions =
                 readRules("adult-rule");
         // then
 
     }
-
     @Test
     public void testRuleDefinitionReading_withCompositeAndBasicRules() throws Exception {
-        // given
-       /* File compositeRuleDescriptor = new File("src/test/resources/composite-rules." + fileExtension);
-
-        // when
-        List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new FileReader(compositeRuleDescriptor));*/
-
-        // then
-
         List<RuleDefinition> ruleDefinitions =
                 readRules("adult-rule");
-        // then
         RuleDefinition ruleDefinition = ruleDefinitions.get(0);
-        assertThat(ruleDefinition).isNotNull();
-        assertThat(ruleDefinition.getName()).isEqualTo("Movie id rule");
-        assertThat(ruleDefinition.getDescription()).isEqualTo("description");
-        assertThat(ruleDefinition.getPriority()).isEqualTo(1);
-        assertThat(ruleDefinition.getCompositeRuleType()).isEqualTo("UnitRuleGroup");
-        assertThat(ruleDefinition.getComposingRules()).isNotEmpty();
+        assertAdultRule(ruleDefinition);             //replace
 
         List<RuleDefinition> subrules = ruleDefinition.getComposingRules();
         assertThat(subrules).hasSize(2);
@@ -223,22 +162,29 @@ public class RuleDefinitionReaderTest {
         assertThat(subrule.getPriority()).isEqualTo(1);
 
         ruleDefinition = ruleDefinitions.get(1);
-        assertThat(ruleDefinition).isNotNull();
-        assertThat(ruleDefinition.getName()).isEqualTo("weather rule");
-        assertThat(ruleDefinition.getDescription()).isEqualTo("when it rains, then take an umbrella");
-        assertThat(ruleDefinition.getComposingRules()).isEmpty();
-        assertThat(ruleDefinition.getCondition()).isEqualTo("rain == True");
-        assertThat(ruleDefinition.getActions()).isEqualTo(Collections.singletonList("System.out.println(\"It rains, take an umbrella!\");"));
+        assertAdultRule(ruleDefinition);                    //replace
     }
     private List<RuleDefinition> readRules(String fileName) throws Exception {
 
         File file = new File(
                 "src/test/resources/" +
-                        fileName + "." + fileExtension);
+                        fileName + "." + fileExtension);     // add for duplicate logic and long method
 
         try (FileReader reader = new FileReader(file)) {
             return ruleDefinitionReader.read(reader);
         }
 
     }
-}
+    private void assertAdultRule(RuleDefinition ruleDefinition) {
+        assertThat(ruleDefinition).isNotNull();
+        assertThat(ruleDefinition.getName()).isEqualTo("adult rule");        // add for duplicate logic and long method
+        assertThat(ruleDefinition.getDescription())
+                .isEqualTo("when age is greater than 18, then mark as adult");
+        assertThat(ruleDefinition.getPriority()).isEqualTo(1);
+        assertThat(ruleDefinition.getCondition()).isEqualTo("person.age > 18");
+        assertThat(ruleDefinition.getActions())
+                .isEqualTo(Collections.singletonList("person.setAdult(true);"));
+        }
+
+    }
+
