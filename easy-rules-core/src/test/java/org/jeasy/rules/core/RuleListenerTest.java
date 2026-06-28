@@ -54,18 +54,23 @@ public class RuleListenerTest extends AbstractTest {
         // Given
         when(rule1.evaluate(facts)).thenReturn(true);
         rules.register(rule1);
-
+        InOrder inOrder = createInOrder();
         // When
         rulesEngine.fire(rules, facts);
 
-        // Then
-        InOrder inOrder = inOrder(rule1, fact1, fact2, ruleListener1, ruleListener2);
         inOrder.verify(ruleListener1).beforeExecute(rule1, facts);
         inOrder.verify(ruleListener2).beforeExecute(rule1, facts);
         inOrder.verify(ruleListener1).onSuccess(rule1, facts);
         inOrder.verify(ruleListener2).onSuccess(rule1, facts);
     }
-
+    private InOrder createInOrder() {
+        return inOrder(
+                rule1,
+                fact1,
+                fact2,
+                ruleListener1,
+                ruleListener2);
+    }
     @Test
     public void whenTheRuleFails_thenOnFailureShouldBeExecuted() throws Exception {
         // Given
@@ -73,12 +78,10 @@ public class RuleListenerTest extends AbstractTest {
         final Exception exception = new Exception("fatal error!");
         doThrow(exception).when(rule1).execute(facts);
         rules.register(rule1);
-
+        InOrder inOrder = createInOrder();
         // When
         rulesEngine.fire(rules, facts);
 
-        // Then
-        InOrder inOrder = inOrder(rule1, fact1, fact2, ruleListener1, ruleListener2);
         inOrder.verify(ruleListener1).beforeExecute(rule1, facts);
         inOrder.verify(ruleListener2).beforeExecute(rule1, facts);
         inOrder.verify(ruleListener1).onFailure(rule1, facts, exception);
